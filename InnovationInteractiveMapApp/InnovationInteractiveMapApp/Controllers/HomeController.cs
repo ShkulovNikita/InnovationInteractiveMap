@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.IO;
 using InnovationInteractiveMapApp.Classes;
+using System.Web.Script.Serialization;
 
 namespace InnovationInteractiveMapApp.Controllers
 {
@@ -24,6 +25,27 @@ namespace InnovationInteractiveMapApp.Controllers
 
             return View();
         }
+
+        public JsonResult ReturnFile()
+        {
+            string text = "";
+            return Json(text);
+        }
+
+        /*public string ReturnFile()
+        {
+            //прочитать файл
+            string text;
+
+            using(StreamReader sr = new StreamReader(Server.MapPath("~/Map/countries.geojson")))
+            {
+                text = sr.ReadToEnd();
+            }
+
+            return text;
+        }*/
+
+
 
         public ActionResult About()
         {

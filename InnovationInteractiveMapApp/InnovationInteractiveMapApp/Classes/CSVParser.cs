@@ -107,7 +107,6 @@ namespace InnovationInteractiveMapApp.Classes
                 string exception = ex.ToString();
             }
 
-            string a = "";
             List<CountryData> countryData = GetCountryData(databasePath);
             countryData = AddCountryInfo(data, countryData);
             WriteCountryData(countryData, databasePath);
@@ -241,22 +240,17 @@ namespace InnovationInteractiveMapApp.Classes
                         }
                         location++;
                         if (data[counter].Total_Patent_Applications != -1)
-                            dataParts[i] = dataParts[i].Insert(location, " \"total_patent_applications\": " + "" + data[counter].Total_Patent_Applications.ToString() + ",");
+                            dataParts[i] = dataParts[i].Insert(location, " \"total\": " + "" + data[counter].Total_Patent_Applications.ToString() + ",");
                         else
-                            dataParts[i] = dataParts[i].Insert(location, " \"total_patent_applications\": " + "" + "null" + ",");
+                            dataParts[i] = dataParts[i].Insert(location, " \"total\": " + "" + "null" + ",");
 
                         counter++;
                         newText = newText + dataParts[i] + "\n";
                     }
                 }
             }
-
-            string test = "";
-
-            for (int j = 141300; j < 141700; j++)
-            {
-                test = test + newText[j];
-            }
+            newText = newText + "]\n";
+            newText = newText + "}\n";
 
             //запись в файл
             try
