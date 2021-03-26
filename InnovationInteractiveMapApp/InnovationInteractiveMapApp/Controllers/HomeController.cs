@@ -17,13 +17,10 @@ namespace InnovationInteractiveMapApp.Controllers
             string databasePath = Server.MapPath("~/Database/database.csv");
 
             //первичное наполнение csv-файла названиями стран
-            //выполнено
-            
             CSVParser.AddCountries(mapPath, databasePath);
-            
 
             string patentApplicationsWIPOPath = Server.MapPath("~/DataFiles/Total patent applications.csv");
-            CSVParser.ParsePatentApplicationsWIPO(patentApplicationsWIPOPath, databasePath);
+            CSVParser.ParsePatentApplicationsWIPO(patentApplicationsWIPOPath, databasePath, mapPath);
 
             return View();
         }
