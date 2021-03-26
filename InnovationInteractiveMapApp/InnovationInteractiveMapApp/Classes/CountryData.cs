@@ -12,6 +12,5 @@ namespace InnovationInteractiveMapApp.Classes
 
         //количество патентов
         public int Total_Patent_Applications { get; set; }
-
     }
 }
