@@ -40,7 +40,7 @@
                             <div class="col-12">
                                 <!--Таблица лидеров-->
                                 <label style="color: rgb(54, 207, 40); font-weight: bold">Топ лидеров</label>
-                                <table class="table">
+                                <table class="table" id="topCountries">
                                     <thead>
                                         <tr>
                                             <th scope="col">Страна</th>
@@ -48,32 +48,14 @@
                                             <th scope="col">Превосходят на (%)</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>USA</td>
-                                            <td>3</td>
-                                            <td>300%</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Poland</td>
-                                            <td>1</td>
-                                            <td>100%</td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>Russia</td>
-                                            <td>0.1</td>
-                                            <td>100%</td>
-                                        </tr>
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-12">
-                                <!--Таблица "соседей"-->
                                 <label style="color: rgb(37, 192, 219); font-weight: bold">Близкие показатели</label>
-                                <table class="table">
+                                <table class="table" id="closeCountries1">
                                     <thead>
                                         <tr>
                                             <th scope="col">Страна</th>
@@ -100,6 +82,9 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div>
+                                    <input type="button" value="Выгрузить CSV" class="btn btn-danger" onclick="location.href='@Url.Action("GetFile", "Home")'" />
+                                </div>
                                 <script>
                                     //массив стран
                                     var countries = [];

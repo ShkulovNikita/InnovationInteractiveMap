@@ -177,6 +177,8 @@ selectIndicator.addEventListener("change", (event) => {
         getIndicatorsArray(currentIndicator);
         geojson.setStyle(style)
     }
+
+    getHighCountries();
 });
 
 //получение показателя по его русскому названию
@@ -232,3 +234,53 @@ selectCountry.addEventListener("change", function () {
 });
 
 getIndicatorsArray();
+
+function getHighCountries() {
+    array1 = [];
+
+    var t = -1;
+    var idplace = 0;
+    var str = "Russia";
+    bounds.features.forEach(function (item, i, arr) {
+        // var nearIndicators = [];
+
+        t = t + 1;
+
+        var name = item.properties.ADMIN;
+        var indicator = "";
+
+        for ([key, value] of Object.entries(item.properties)) {
+            // t = t + 1; ptnkl tp tkn
+            if (value == "total_trademark_applications") {
+                indicator = value;
+                //countries.push(value);
+                array1.push({ name: name, value: indicator });
+            } else {
+            }
+            // if (name == "Russia") {
+            //   idplace = t;
+            // }
+        }
+        console.log(name);
+        if (name == "Russia") {
+            idplace = t;
+        }
+    });
+
+    array1.sort(function (a, b) {
+        return a.value - b.value;
+    });
+    console.log(array1);
+    var str = "Russia";
+
+    var array3 = array1.slice(array1.length - 3, array1.length);
+    array3.forEach(function (item, i, arr) {
+        $("#topCountries").append(
+            `<tr><td>${item.name}</td><td>${item.value}</td></tr>`
+        );
+    });
+    idplace = 100;
+    console.log(Number(idplace));
+
+    console.log(array3);
+}

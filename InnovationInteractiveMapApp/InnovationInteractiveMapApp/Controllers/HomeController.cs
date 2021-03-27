@@ -46,5 +46,14 @@ namespace InnovationInteractiveMapApp.Controllers
 
             return View();
         }
+
+        //выгрузка CSV-файла
+        public FileResult GetFile()
+        {
+            string filePath = Server.MapPath("~/Database/database.csv");
+            string fileType = "csv";
+            string fileName = "data.csv";
+            return File(filePath, fileType, fileName);
+        }
     }
 }
