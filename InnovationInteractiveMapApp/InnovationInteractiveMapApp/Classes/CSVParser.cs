@@ -62,9 +62,9 @@ namespace InnovationInteractiveMapApp.Classes
                 //открыть на запись
                 using (StreamWriter sw = new StreamWriter(databasePath, false, System.Text.Encoding.Default))
                 {
-                    sw.WriteLine("country,,,,,");
+                    sw.WriteLine("country,,,,,,");
                     for (int i = 0; i < countryNames.Count(); i++)
-                        sw.WriteLine(countryNames[i] + ",,,,,");
+                        sw.WriteLine(countryNames[i] + ",,,,,,");
                 }
             }
             catch (Exception ex)
@@ -154,7 +154,7 @@ namespace InnovationInteractiveMapApp.Classes
         }
 
         //парсер для файлов с сайта WorldBank
-        static private Dictionary<string, double> ParseWorldBank(string filePath)
+        static private Dictionary<string, double> ParseWorldBank(string filePath, int position)
         {
             Dictionary<string, double> data = new Dictionary<string, double>();
 
@@ -170,25 +170,25 @@ namespace InnovationInteractiveMapApp.Classes
                         line = line.Replace("\"", "");
                         //разбить строку по запятым
                         string[] dataParts = line.Split(',');
-                        //в строках данных по странам 66 частей
-                        if ((dataParts.Length == 66) && (dataParts[0] != "Country Name"))
+                        //в строках данных по странам position частей
+                        if ((dataParts.Length == position) && (dataParts[0] != "Country Name"))
                         {
                             //нужно получить последние известные данные
                             //отбор с 2016 по 2019 год
                             string value = "";
 
                             //2019
-                            if (dataParts[63] != "")
-                                value = dataParts[63];
+                            if (dataParts[position - 3] != "")
+                                value = dataParts[position - 3];
                             //2018
-                            else if (dataParts[62] != "")
-                                value = dataParts[62];
+                            else if (dataParts[position - 4] != "")
+                                value = dataParts[position - 4];
                             //2017
-                            else if (dataParts[61] != "")
-                                value = dataParts[61];
+                            else if (dataParts[position - 5] != "")
+                                value = dataParts[position - 5];
                             //2016
-                            else if (dataParts[60] != "")
-                                value = dataParts[60];
+                            else if (dataParts[position - 6] != "")
+                                value = dataParts[position - 6];
 
                             //поменять десятичный разделитель для конвертации
                             value = value.Replace('.', ',');
@@ -211,7 +211,7 @@ namespace InnovationInteractiveMapApp.Classes
         //парсинг файла с экспортом высоких технологий
         static public void ParseHighTechExportsWorldBank(string filePath, string databasePath, string mapPath)
         {
-            Dictionary<string, double> data = ParseWorldBank(filePath);
+            Dictionary<string, double> data = ParseWorldBank(filePath, 66);
             List<CountryData> countryData = GetCountryData(databasePath);
             countryData = AddCountryHighTechExportsInfo(data, countryData);
             WriteCountryData(countryData, databasePath);
@@ -220,7 +220,7 @@ namespace InnovationInteractiveMapApp.Classes
         //парсинг файла с экспортом высоких технологий (в долларах США)
         static public void ParseHighTechExportsUSDWorldBank(string filePath, string databasePath, string mapPath)
         {
-            Dictionary<string, double> data = ParseWorldBank(filePath);
+            Dictionary<string, double> data = ParseWorldBank(filePath, 66);
             List<CountryData> countryData = GetCountryData(databasePath);
             countryData = AddCountryHighTechExportsUSDInfo(data, countryData);
             WriteCountryData(countryData, databasePath);
@@ -229,17 +229,20 @@ namespace InnovationInteractiveMapApp.Classes
         //парсинг файла с затратами на R&D
         static public void ParseResAndDevExpendWorldBank(string filePath, string databasePath, string mapPath)
         {
-            Dictionary<string, double> data = ParseWorldBank(filePath);
+            Dictionary<string, double> data = ParseWorldBank(filePath, 66);
             List<CountryData> countryData = GetCountryData(databasePath);
             countryData = AddCountryResAndDevInfo(data, countryData);
             WriteCountryData(countryData, databasePath);
-            EditMapJSON(countryData, mapPath);
         }
 
         //парсинг файла с платой за интеллектуальную собственность
         static public void ParseIntelPropPaymentWorldBank(string filePath, string databasePath, string mapPath)
         {
-
+            Dictionary<string, double> data = ParseWorldBank(filePath, 68);
+            List<CountryData> countryData = GetCountryData(databasePath);
+            countryData = AddCountryIntelPropPaymentInfo(data, countryData);
+            WriteCountryData(countryData, databasePath);
+            EditMapJSON(countryData, mapPath);
         }
 
         //перенести информацию о торговых марках в данные о странах
@@ -322,6 +325,22 @@ namespace InnovationInteractiveMapApp.Classes
             return countryData;
         }
 
+        //перенести информацию о платах за интеллектуальную собственность
+        static private List<CountryData> AddCountryIntelPropPaymentInfo(Dictionary<string, double> newInfo, List<CountryData> countryData)
+        {
+            //перебор стран из списка
+            for (int i = 0; i < countryData.Count(); i++)
+            {
+                //если текущая страна упоминается в словаре, то информация переносится
+                if (newInfo.ContainsKey(countryData[i].Name))
+                {
+                    countryData[i].IntelPropertyPayment = newInfo[countryData[i].Name];
+                }
+            }
+
+            return countryData;
+        }
+
         //получить информацию о странах из database.csv
         static private List<CountryData> GetCountryData(string databasePath)
         {
@@ -368,6 +387,11 @@ namespace InnovationInteractiveMapApp.Classes
                                 countryData.Res_And_Dev_Expenditure = Convert.ToDouble(dataParts[5].Replace('.', ','));
                             else
                                 countryData.Res_And_Dev_Expenditure = -1;
+                            //плата за интеллектуальную собственность
+                            if ((dataParts[6] != "NULL") && (dataParts[6] != ""))
+                                countryData.IntelPropertyPayment = Convert.ToDouble(dataParts[6].Replace('.', ','));
+                            else
+                                countryData.IntelPropertyPayment = -1;
 
                             //добавление страны с её данными в список
                             data.Add(countryData);
@@ -383,6 +407,56 @@ namespace InnovationInteractiveMapApp.Classes
             return data;
         }
 
+        //строка с данными одной страны
+        static private string GetStringForDatabase(CountryData data)
+        {
+            //строка данных об одной стране
+            string dataStr = data.Name + ",";
+
+            //патенты
+            dataStr = dataStr + CheckValue(data.Total_Patent_Applications);
+
+            //торговые марки
+            dataStr = dataStr + CheckValue(data.Total_Trademark_Applications);
+
+            //экспорт высоких технологий
+            dataStr = dataStr + CheckValue(data.High_Tech_Exports);
+
+            //экспорт высоких технологий (в долларах)
+            dataStr = dataStr + CheckValue(data.High_Tech_Exports_USD);
+
+            //затраты на R&D
+            dataStr = dataStr + CheckValue(data.Res_And_Dev_Expenditure);
+
+            //плата за интеллектуальную собственность
+            dataStr = dataStr + CheckValue(data.IntelPropertyPayment);
+
+            return dataStr;
+        }
+
+        //выдача значения показателя или NULL, если равен -1
+        static private string CheckValue(int value)
+        {
+            string result = "";
+            if (value != -1)
+                result = result + value.ToString() + ",";
+            else
+                result = result + "NULL,";
+
+            return result;
+        }
+
+        static private string CheckValue(double value)
+        {
+            string result = "";
+            if (value != -1)
+                result = result + value.ToString().Replace(',', '.') + ",";
+            else
+                result = result + "NULL,";
+
+            return result;
+        }
+
         //записать информацию о странах в database.csv
         static private void WriteCountryData(List<CountryData> data, string databasePath)
         {
@@ -390,51 +464,10 @@ namespace InnovationInteractiveMapApp.Classes
             {
                 using (StreamWriter sw = new StreamWriter(databasePath, false, System.Text.Encoding.Default))
                 {
-                    sw.WriteLine("country,total patent applications,total trademark applications,high-technology exports,high-technology exports (USD),research and development expenditure");
+                    sw.WriteLine("country,total patent applications,total trademark applications,high-technology exports,high-technology exports (USD),research and development expenditure,payment for intellectual property");
                     for (int i = 0; i < data.Count(); i++)
                     {
-                        //строка данных об одной стране
-                        string dataStr = data[i].Name + ",";
-
-                        //патенты
-                        if (data[i].Total_Patent_Applications != -1)
-                            dataStr = dataStr + data[i].Total_Patent_Applications + ",";
-                        else 
-                            dataStr = dataStr + "NULL,";
-
-                        //торговые марки
-                        if (data[i].Total_Trademark_Applications != -1)
-                            dataStr = dataStr + data[i].Total_Trademark_Applications + ",";
-                        else
-                            dataStr = dataStr + "NULL,";
-
-                        //экспорт высоких технологий
-                        if (data[i].High_Tech_Exports != -1)
-                        {
-                            string str = data[i].High_Tech_Exports.ToString().Replace(',', '.');
-                            dataStr = dataStr + str + ",";
-                        }
-                        else
-                            dataStr = dataStr + "NULL,";
-
-                        //экспорт высоких технологий (в долларах)
-                        if (data[i].High_Tech_Exports_USD != -1)
-                        {
-                            string str = data[i].High_Tech_Exports_USD.ToString().Replace(',', '.');
-                            dataStr = dataStr + str + ",";
-                        }
-                        else
-                            dataStr = dataStr + "NULL,";
-
-                        //затраты на R&D
-                        if (data[i].Res_And_Dev_Expenditure != -1)
-                        {
-                            string str = data[i].Res_And_Dev_Expenditure.ToString().Replace(',', '.');
-                            dataStr = dataStr + str + ",";
-                        }
-                        else
-                            dataStr = dataStr + "NULL,";
-
+                        string dataStr = GetStringForDatabase(data[i]);
                         sw.WriteLine(dataStr);
                     }
                 }
@@ -495,6 +528,7 @@ namespace InnovationInteractiveMapApp.Classes
                         string strHighTechExports = "";
                         string strHighTechExportsUSD = "";
                         string strResAndDev = "";
+                        string strIntelPropPaym = "";
 
                         //если этот показатель не был записан ранее
                         if (!dataParts[i].Contains("total_patent_applications")) 
@@ -527,8 +561,14 @@ namespace InnovationInteractiveMapApp.Classes
                                 strResAndDev = " \"res_and_dev_expenditure\": " + data[counter].Res_And_Dev_Expenditure.ToString().Replace(',', '.') + ",";
                             else strResAndDev = " \"res_and_dev_expenditure\": " + "null" + ",";
                         }
+                        if(!dataParts[i].Contains("payment_for_intel_property"))
+                        {
+                            if (data[counter].IntelPropertyPayment != -1)
+                                strIntelPropPaym = " \"payment_for_intel_property\": " + data[counter].IntelPropertyPayment.ToString().Replace(',', '.') + ",";
+                            else strIntelPropPaym = " \"payment_for_intel_property\": " + "null" + ",";
+                        }
 
-                        dataParts[i] = dataParts[i].Insert(location, strPatent + strTrademark + strHighTechExports + strHighTechExportsUSD + strResAndDev);
+                        dataParts[i] = dataParts[i].Insert(location, strPatent + strTrademark + strHighTechExports + strHighTechExportsUSD + strResAndDev + strIntelPropPaym);
                         
                         counter++;
                         newText = newText + dataParts[i] + "\n";

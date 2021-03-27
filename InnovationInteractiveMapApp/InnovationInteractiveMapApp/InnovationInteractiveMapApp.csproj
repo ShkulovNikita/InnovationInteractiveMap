@@ -146,6 +146,9 @@
     <Content Include="DataFiles\High-technology exports.csv" />
     <Content Include="DataFiles\High-technology exports %28USD%29.csv" />
     <Content Include="DataFiles\Research and development.csv" />
+    <Content Include="DataFiles\Researchers in Research and Development.csv" />
+    <Content Include="DataFiles\Scientific and technical journal articles.csv" />
+    <Content Include="DataFiles\Charges for the use of intellectual property.csv" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
