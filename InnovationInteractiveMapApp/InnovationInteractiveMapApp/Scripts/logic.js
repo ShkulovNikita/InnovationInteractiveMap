@@ -73,9 +73,8 @@ function highlightFeature(e) {
 //убрать эффект наведения
 function resetHighlight(e) {
 
-    geojson.resetStyle(e.target);
-
-    if (currentIndicator == "default") {
+    //geojson.resetStyle(e.target);
+    if ((translateIndicator(currentIndicator) == "default") || (currentIndicator == "default")) {
         geojson.setStyle(initialStyle);
     }
     else {
@@ -201,7 +200,6 @@ function translateIndicator(indicator) {
 //обновление минимального и максимального значений по выбранному показателю
 function getIndicatorsArray(indicator) {
     var array = [];
-    var minValue = 0;
 
     const data = bounds.features.map((feature) => {
         var value = feature.properties[indicator];
