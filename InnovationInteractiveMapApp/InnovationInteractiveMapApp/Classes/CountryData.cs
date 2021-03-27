@@ -13,5 +13,8 @@
 
         //экспорт высоких технологий (в % от произведенного экспорта)
         public double High_Tech_Exports { get; set; }
+
+        //экспорт высоких технологий (в долларах)
+        public double High_Tech_Exports_USD { get; set; }
     }
 }
