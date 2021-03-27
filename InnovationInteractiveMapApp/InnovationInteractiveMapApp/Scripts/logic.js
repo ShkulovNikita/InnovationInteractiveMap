@@ -72,7 +72,18 @@ function highlightFeature(e) {
 
 //убрать эффект наведения
 function resetHighlight(e) {
+
     geojson.resetStyle(e.target);
+
+    if (currentIndicator == "default") {
+        geojson.setStyle(initialStyle);
+    }
+    else {
+        //получить массив значений показателя
+        getIndicatorsArray(currentIndicator);
+        geojson.setStyle(style)
+    }
+
     info.update();
 }
 
