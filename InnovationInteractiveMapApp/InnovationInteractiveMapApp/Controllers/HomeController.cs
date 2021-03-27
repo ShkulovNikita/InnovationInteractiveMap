@@ -17,6 +17,9 @@ namespace InnovationInteractiveMapApp.Controllers
             string patentApplicationsWIPOPath = Server.MapPath("~/DataFiles/Total patent applications.csv");
             CSVParser.ParsePatentApplicationsWIPO(patentApplicationsWIPOPath, databasePath, mapPath);
 
+            string trademarkApplicationsWIPOPath = Server.MapPath("~/DataFiles/Total trademark applications.csv");
+            CSVParser.ParseTrademarkApplicationsWIPO(trademarkApplicationsWIPOPath, databasePath, mapPath);
+
             return View();
         }
     }

@@ -62,9 +62,9 @@ namespace InnovationInteractiveMapApp.Classes
                 //открыть на запись
                 using (StreamWriter sw = new StreamWriter(databasePath, false, System.Text.Encoding.Default))
                 {
-                    sw.WriteLine("country,");
+                    sw.WriteLine("country,,");
                     for (int i = 0; i < countryNames.Count(); i++)
-                        sw.WriteLine(countryNames[i] + ",");
+                        sw.WriteLine(countryNames[i] + ",,");
                 }
             }
             catch (Exception ex)
@@ -107,13 +107,71 @@ namespace InnovationInteractiveMapApp.Classes
             }
 
             List<CountryData> countryData = GetCountryData(databasePath);
-            countryData = AddCountryInfo(data, countryData);
+            countryData = AddCountryPatentsInfo(data, countryData);
+            WriteCountryData(countryData, databasePath);
+        }
+
+        //парсинг файла с количеством торговых марок (получен из WIPO)
+        static public void ParseTrademarkApplicationsWIPO(string filePath, string databasePath, string mapPath)
+        {
+            //словарь страна-значение
+            Dictionary<string, int> data = new Dictionary<string, int>();
+
+            //открыть CSV-файл с данными для парсинга
+            try
+            {
+                using (StreamReader sr = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        //удалить кавычки из строки
+                        line = line.Replace("\"", "");
+                        //рассматриваются только итоговые, Total
+                        if ((!line.Contains("Abroad"))&&(!line.Contains("Resident")))
+                        {
+                            //разбить очередную строку по запятым
+                            string[] dataParts = line.Split(',');
+                            //если количество полученных частей - 6, то найдена строка с данными
+                            if (dataParts.Length == 6)
+                            {
+                                //первая часть - название страны
+                                //последняя - значение
+                                data.Add(dataParts[0], Convert.ToInt32(dataParts[4]));
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string exception = ex.ToString();
+            }
+
+            List<CountryData> countryData = GetCountryData(databasePath);
+            countryData = AddCountryTrademarkInfo(data, countryData);
             WriteCountryData(countryData, databasePath);
             EditMapJSON(countryData, mapPath);
         }
 
-        //перенести новую информацию в данные о странах
-        static private List<CountryData> AddCountryInfo(Dictionary<string, int> newInfo, List<CountryData> countryData)
+        //перенести информацию о торговых марках в данные о странах
+        static private List<CountryData> AddCountryTrademarkInfo(Dictionary<string, int> newInfo, List<CountryData> countryData)
+        {
+            //перебор стран из списка
+            for (int i = 0; i < countryData.Count(); i++)
+            {
+                //если текущая страна упоминается в словаре, то информация переносится
+                if (newInfo.ContainsKey(countryData[i].Name))
+                {
+                    countryData[i].Total_Trademark_Applications = newInfo[countryData[i].Name];
+                }
+            }
+
+            return countryData;
+        }
+
+        //перенести информацию о патентах в данные о странах
+        static private List<CountryData> AddCountryPatentsInfo(Dictionary<string, int> newInfo, List<CountryData> countryData)
         {
             //перебор стран из списка
             for (int i = 0; i < countryData.Count(); i++)
@@ -152,6 +210,10 @@ namespace InnovationInteractiveMapApp.Classes
                                 countryData.Total_Patent_Applications = Convert.ToInt32(dataParts[1]);
                             else 
                                 countryData.Total_Patent_Applications = -1;
+                            if ((dataParts[2] != "NULL") && (dataParts[2] != ""))
+                                countryData.Total_Trademark_Applications = Convert.ToInt32(dataParts[2]);
+                            else
+                                countryData.Total_Trademark_Applications = -1;
 
                             //добавление страны с её данными в список
                             data.Add(countryData);
@@ -174,7 +236,7 @@ namespace InnovationInteractiveMapApp.Classes
             {
                 using (StreamWriter sw = new StreamWriter(databasePath, false, System.Text.Encoding.Default))
                 {
-                    sw.WriteLine("country,total patent applications,");
+                    sw.WriteLine("country,total patent applications,total trademark applications");
                     for (int i = 0; i < data.Count(); i++)
                     {
                         //строка данных об одной стране
@@ -183,6 +245,11 @@ namespace InnovationInteractiveMapApp.Classes
                         if (data[i].Total_Patent_Applications != -1)
                             dataStr = dataStr + data[i].Total_Patent_Applications + ",";
                         else 
+                            dataStr = dataStr + "NULL,";
+
+                        if (data[i].Total_Trademark_Applications != 0)
+                            dataStr = dataStr + data[i].Total_Trademark_Applications + ",";
+                        else
                             dataStr = dataStr + "NULL,";
 
                         sw.WriteLine(dataStr);
@@ -238,11 +305,26 @@ namespace InnovationInteractiveMapApp.Classes
                             currentSymbol = dataParts[i][location];
                         }
                         location++;
-                        if (data[counter].Total_Patent_Applications != -1)
-                            dataParts[i] = dataParts[i].Insert(location, " \"total\": " + "" + data[counter].Total_Patent_Applications.ToString() + ",");
-                        else
-                            dataParts[i] = dataParts[i].Insert(location, " \"total\": " + "" + "null" + ",");
 
+                        string strPatent;
+                        string strTrademark;
+                        if (data[counter].Total_Patent_Applications != -1)
+                            strPatent = " \"total_patent_applications\": " + data[counter].Total_Patent_Applications.ToString() + ",";
+                        else strPatent = " \"total_patent_applications\": " + "null" + ",";
+                        if (data[counter].Total_Trademark_Applications != -1)
+                            strTrademark = " \"total_trademark_applications\": " + data[counter].Total_Trademark_Applications.ToString() + ",";
+                        else strTrademark = " \"total_trademark_applications\": " + "null" + ",";
+
+                        dataParts[i] = dataParts[i].Insert(location, strPatent + strTrademark);
+                        
+                        /*
+                        //if (data[counter].Total_Patent_Applications != -1)
+                            dataParts[i] = dataParts[i].Insert(location, " \"total_patent_applications\": " + data[counter].Total_Patent_Applications.ToString() + ","
+                                                                        + " \"total_trademark_applications\": " + data[counter].Total_Trademark_Applications.ToString() + ",");
+                        /*else
+                            dataParts[i] = dataParts[i].Insert(location, " \"total_patent_applications\": " + "null" + "," +
+                                                                        + " \"total_trademark_applications "    );*/
+                        
                         counter++;
                         newText = newText + dataParts[i] + "\n";
                     }
