@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Web.Mvc;
 using InnovationInteractiveMapApp.Classes;
 
@@ -6,6 +7,18 @@ namespace InnovationInteractiveMapApp.Controllers
 {
     public class HomeController : Controller
     {
+        public ActionResult ShowJSON()
+        {
+            string path = Server.MapPath("~/Map/countries.geojson");
+
+            using (StreamReader sr = new StreamReader(path))
+            {
+
+            }
+
+            return View();
+        }
+
         public ActionResult Index()
         {
             //пути до файлов
@@ -39,7 +52,6 @@ namespace InnovationInteractiveMapApp.Controllers
             {
                 string exception = ex.ToString();
             }
-            
 
             return View();
         }
