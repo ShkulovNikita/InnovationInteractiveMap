@@ -73,7 +73,6 @@ function highlightFeature(e) {
 //убрать эффект наведения
 function resetHighlight(e) {
 
-    //geojson.resetStyle(e.target);
     if ((translateIndicator(currentIndicator) == "default") || (currentIndicator == "default")) {
         geojson.setStyle(initialStyle);
     }
@@ -242,26 +241,18 @@ function getHighCountries() {
     var idplace = 0;
     var str = "Russia";
     bounds.features.forEach(function (item, i, arr) {
-        // var nearIndicators = [];
-
         t = t + 1;
 
         var name = item.properties.ADMIN;
         var indicator = "";
 
         for ([key, value] of Object.entries(item.properties)) {
-            // t = t + 1; ptnkl tp tkn
-            if (value == "total_trademark_applications") {
+            if (key == currentIndicator) {
                 indicator = value;
-                //countries.push(value);
                 array1.push({ name: name, value: indicator });
             } else {
             }
-            // if (name == "Russia") {
-            //   idplace = t;
-            // }
         }
-        console.log(name);
         if (name == "Russia") {
             idplace = t;
         }
@@ -270,17 +261,19 @@ function getHighCountries() {
     array1.sort(function (a, b) {
         return a.value - b.value;
     });
-    console.log(array1);
     var str = "Russia";
 
     var array3 = array1.slice(array1.length - 3, array1.length);
-    array3.forEach(function (item, i, arr) {
-        $("#topCountries").append(
-            `<tr><td>${item.name}</td><td>${item.value}</td></tr>`
-        );
-    });
-    idplace = 100;
-    console.log(Number(idplace));
 
-    console.log(array3);
+    //удалить старые строки
+    $('.top-row').remove();
+
+    for (i = 2; i > -1; i--)
+    {
+        $("#topCountries").append(
+            `<tr class='top-row'><td>${array3[i].name}</td><td>${array3[i].value}</td></tr>`
+        );
+    }
+
+    idplace = 100;    
 }
