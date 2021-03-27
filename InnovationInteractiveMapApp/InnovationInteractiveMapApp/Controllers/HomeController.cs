@@ -7,24 +7,12 @@ namespace InnovationInteractiveMapApp.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult ShowJSON()
-        {
-            string path = Server.MapPath("~/Map/countries.geojson");
-
-            using (StreamReader sr = new StreamReader(path))
-            {
-
-            }
-
-            return View();
-        }
-
         public ActionResult Index()
         {
             //пути до файлов
             string mapPath = Server.MapPath("~/Map/countries.geojson");
             string databasePath = Server.MapPath("~/Database/database.csv");
-
+            /*
             try
             {
                 //первичное наполнение csv-файла названиями стран
@@ -51,7 +39,10 @@ namespace InnovationInteractiveMapApp.Controllers
             catch (Exception ex)
             {
                 string exception = ex.ToString();
-            }
+            }*/
+
+            //string savePath = Server.MapPath("~/Scripts/data.js");
+            //CSVParser.MakeJSData(mapPath, savePath);
 
             return View();
         }

@@ -1,9 +1,139 @@
-﻿@{
-    ViewBag.Title = "Интерактивная карта инновационного развития";
-}
+﻿@{ ViewBag.Title = "Интерактивная карта инновационного развития"; }
 
 <div class="row">
-    <div class="col-md-9">
-        <!--Здесь должен быть наш фронт-->
+    <div class="col-md-12">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+                crossorigin="anonymous"></script>
+        <h1>Я карта</h1>
+
+        <div class="container-md">
+            <div class="row">
+                <div class="col-md-8">
+                    <div id="mapid"></div>
+                </div>
+                <div class="col-md-4">
+                    <aside>
+                        <div class="row">
+                            <label>Показатель</label>
+                            <div class="col-md-12">
+                                <select class="form-select form-select-sm"
+                                        aria-label="Страны"
+                                        id="indicators"></select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label>Страны</label>
+                            <div class="col-md-12">
+                                <select class="form-select form-select-sm"
+                                        aria-label="Показатель"
+                                        id="country">
+                                    <option selected>Russia</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                </select>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-12">
+                                <label style="color: rgb(54, 207, 40); font-weight: bold">Топ лидеров</label>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Страна</th>
+                                            <th scope="col">Значение</th>
+                                            <th scope="col">Превосходят на (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>USA</td>
+                                            <td>3</td>
+                                            <td>300%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Poland</td>
+                                            <td>1</td>
+                                            <td>100%</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Russia</td>
+                                            <td>0.1</td>
+                                            <td>100%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <label style="color: rgb(37, 192, 219); font-weight: bold">Близкие показатели</label>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Страна</th>
+                                            <th scope="col">Значение</th>
+                                            <th scope="col">Превосходят на (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>USA</td>
+                                            <td>3</td>
+                                            <td>300%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Poland</td>
+                                            <td>1</td>
+                                            <td>100%</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Russia</td>
+                                            <td>0.1</td>
+                                            <td>100%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <script>
+                                    var countries = [];
+                                    var indicators = [];
+                                    for ([key, value] of Object.entries(
+                                        bounds.features[0].properties
+                                    )) {
+                                        if (key != "ADMIN") {
+                                            indicators.push(key);
+                                        }
+                                    }
+
+                                    bounds.features.forEach(function (item, i, arr) {
+                                        for ([key, value] of Object.entries(item.properties)) {
+                                            if (key == "ADMIN") {
+                                                countries.push(value);
+                                            } else {
+                                            }
+                                        }
+                                    });
+
+                                    //Добавляем знаяения в списки страны и показателей
+                                    indicators.forEach(function (item, i, arr) {
+                                        $("#indicators").append(`<option>${item}</option>`);
+                                    });
+                                    countries.forEach(function (item, i, arr) {
+                                        $("#country").append(`<option>${item}</option>`);
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+
+        <!-- Комментарий -->
+        <script type="text/javascript" src="~/Scripts/logic.js"></script>
     </div>
 </div>

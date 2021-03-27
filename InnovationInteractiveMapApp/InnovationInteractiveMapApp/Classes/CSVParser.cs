@@ -7,6 +7,37 @@ namespace InnovationInteractiveMapApp.Classes
 {
     public class CSVParser
     {
+        //создать js-файл на основе GeoJSON
+        static public void MakeJSData(string mapPath, string savePath)
+        {
+            string text = "var bounds = ";
+            //прочитать GeoJSON
+            try
+            {
+                using (StreamReader sr = new StreamReader(mapPath))
+                {
+                    text = text + sr.ReadToEnd();
+                }
+            }
+            catch (Exception ex)
+            {
+                string exception = ex.ToString();
+            }
+
+            //сохранить файл
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(savePath, false, System.Text.Encoding.Default))
+                {
+                    sw.WriteLine(text);
+                }
+            }
+            catch (Exception ex)
+            {
+                string exception = ex.ToString();
+            }
+        }
+
         //добавить список стран из GeoJSON-файла карты
         static public void AddCountries(string mapPath, string databasePath)
         {
@@ -530,49 +561,42 @@ namespace InnovationInteractiveMapApp.Classes
                         string strResAndDev = "";
                         string strIntelPropPaym = "";
 
-                        //total_patent_applications
-                        //total_trademark_applications
-                        //high_tech_exports
-                        //high_tech_exports_usd
-                        //res_and_dev_expenditure
-                        //payment_for_intel_property
-
                         //если этот показатель не был записан ранее
-                        if (!dataParts[i].Contains("Количество_заявлений_на_патенты")) 
+                        if (!dataParts[i].Contains("total_patent_applications")) 
                         {
                             if (data[counter].Total_Patent_Applications != -1)
-                                strPatent = " \"Количество_заявлений_на_патенты\": " + data[counter].Total_Patent_Applications.ToString() + ",";
-                            else strPatent = " \"Количество_заявлений_на_патенты\": " + "null" + ",";
+                                strPatent = " \"total_patent_applications\": " + data[counter].Total_Patent_Applications.ToString() + ",";
+                            else strPatent = " \"total_patent_applications\": " + "null" + ",";
                         }
-                        if (!dataParts[i].Contains("Количество_заявлений_на_торговые_марки")) 
+                        if (!dataParts[i].Contains("total_trademark_applications")) 
                         {
                             if (data[counter].Total_Trademark_Applications != -1)
-                                strTrademark = " \"Количество_заявлений_на_торговые_марки\": " + data[counter].Total_Trademark_Applications.ToString() + ",";
-                            else strTrademark = " \"Количество_заявлений_на_торговые_марки\": " + "null" + ",";
+                                strTrademark = " \"total_trademark_applications\": " + data[counter].Total_Trademark_Applications.ToString() + ",";
+                            else strTrademark = " \"total_trademark_applications\": " + "null" + ",";
                         }
-                        if(!dataParts[i].Contains("Экспорт_высоких_технологий_в_процентах"))
+                        if(!dataParts[i].Contains("high_tech_exports"))
                         {
                             if (data[counter].High_Tech_Exports != -1)
-                                strHighTechExports = " \"Экспорт_высоких_технологий_в_процентах\": " + data[counter].High_Tech_Exports.ToString().Replace(',', '.') + ",";
-                            else strHighTechExports = " \"Экспорт_высоких_технологий_в_процентах\": " + "null" + ",";
+                                strHighTechExports = " \"high_tech_exports\": " + data[counter].High_Tech_Exports.ToString().Replace(',', '.') + ",";
+                            else strHighTechExports = " \"high_tech_exports\": " + "null" + ",";
                         }
-                        if(!dataParts[i].Contains("Экспорт_высоких_технологий_в_долларах"))
+                        if(!dataParts[i].Contains("high_tech_exports_usd"))
                         {
                             if (data[counter].High_Tech_Exports_USD != -1)
-                                strHighTechExportsUSD = " \"Экспорт_высоких_технологий_в_долларах\": " + data[counter].High_Tech_Exports_USD.ToString().Replace(',', '.') + ",";
-                            else strHighTechExportsUSD = " \"Экспорт_высоких_технологий_в_долларах\": " + "null" + ",";
+                                strHighTechExportsUSD = " \"high_tech_exports_usd\": " + data[counter].High_Tech_Exports_USD.ToString().Replace(',', '.') + ",";
+                            else strHighTechExportsUSD = " \"high_tech_exports_usd\": " + "null" + ",";
                         }
-                        if(!dataParts[i].Contains("Затраты_на_НИОКР"))
+                        if(!dataParts[i].Contains("res_and_dev_expenditure"))
                         {
                             if (data[counter].Res_And_Dev_Expenditure != -1)
-                                strResAndDev = " \"Затраты_на_НИОКР\": " + data[counter].Res_And_Dev_Expenditure.ToString().Replace(',', '.') + ",";
-                            else strResAndDev = " \"Затраты_на_НИОКР\": " + "null" + ",";
+                                strResAndDev = " \"res_and_dev_expenditure\": " + data[counter].Res_And_Dev_Expenditure.ToString().Replace(',', '.') + ",";
+                            else strResAndDev = " \"res_and_dev_expenditure\": " + "null" + ",";
                         }
-                        if(!dataParts[i].Contains("Оплата_интеллектуальной_собственности"))
+                        if(!dataParts[i].Contains("payment_for_intel_property"))
                         {
                             if (data[counter].IntelPropertyPayment != -1)
-                                strIntelPropPaym = " \"Оплата_интеллектуальной_собственности\": " + data[counter].IntelPropertyPayment.ToString().Replace(',', '.') + ",";
-                            else strIntelPropPaym = " \"Оплата_интеллектуальной_собственности\": " + "null" + ",";
+                                strIntelPropPaym = " \"payment_for_intel_property\": " + data[counter].IntelPropertyPayment.ToString().Replace(',', '.') + ",";
+                            else strIntelPropPaym = " \"payment_for_intel_property\": " + "null" + ",";
                         }
 
                         dataParts[i] = dataParts[i].Insert(location, strPatent + strTrademark + strHighTechExports + strHighTechExportsUSD + strResAndDev + strIntelPropPaym);
