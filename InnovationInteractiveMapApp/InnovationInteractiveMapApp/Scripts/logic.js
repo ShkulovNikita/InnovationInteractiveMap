@@ -238,7 +238,7 @@ function getHighCountries() {
     array1 = [];
 
     var t = -1;
-    var idplace = 0;
+    var idplace = 100;
     var str = "Russia";
     bounds.features.forEach(function (item, i, arr) {
         t = t + 1;
@@ -253,9 +253,6 @@ function getHighCountries() {
             } else {
             }
         }
-        if (name == "Russia") {
-            idplace = t;
-        }
     });
 
     array1.sort(function (a, b) {
@@ -263,17 +260,79 @@ function getHighCountries() {
     });
     var str = "Russia";
 
+    //найти Россию
+    for (i = 0; i < array1.length; i++) {
+        var countryName = array1[i].name;
+
+        if (countryName == str) {
+            idplace = i;
+            break;
+        }
+    }
+
     var array3 = array1.slice(array1.length - 3, array1.length);
 
     //удалить старые строки
     $('.top-row').remove();
 
-    for (i = 2; i > -1; i--)
-    {
+    if ((translateIndicator(currentIndicator) == "default") || (currentIndicator == "default")) {
         $("#topCountries").append(
-            `<tr class='top-row'><td>${array3[i].name}</td><td>${array3[i].value}</td></tr>`
+            `<tr class='top-row'><td>n</td><td>-----</td><td>-----</td></tr>`
         );
+        for (i = 0; i < 3; i++) {
+            $("#topCountries").append(
+                `<tr class='top-row'><td>${i+1}</td><td>-----</td><td>-----</td></tr>`
+            );
+        }
+    } else {
+        $("#topCountries").append(
+            `<tr class='top-row'><td><b>${array1.length - idplace}</b></td><td><b>${array1[idplace].name}</b></td><td><b>${array1[idplace].value}</b></td></tr>`
+        );
+        for (i = 2; i > -1; i--) {
+            $("#topCountries").append(
+                `<tr class='top-row'><td>${3 - i}</td><td>${array3[i].name}</td><td>${array3[i].value}</td></tr>`
+            );
+        }
     }
 
-    idplace = 100;    
+    getCloseCountries(idplace);
+}
+
+function getCloseCountries(id) {
+    //удалить старые строки
+    $('.close-row').remove();
+
+    if ((translateIndicator(currentIndicator) == "default") || (currentIndicator == "default")) {
+        for (i = 0; i < 3; i++) {
+            $("#closeCountries1").append(
+                `<tr class='close-row'><td>-----</td><td>-----</td></tr>`
+            );
+        }
+    } else {
+        theNearCountries = [];
+        theNearCountries.push({
+            name: array1[id - 1].name,
+            value: array1[id - 1].value,
+        });
+        theNearCountries.push({
+            name: array1[id].name,
+            value: array1[id].value,
+        });
+        theNearCountries.push({
+            name: array1[id + 1].name,
+            value: array1[id + 1].value,
+        });
+
+        theNearCountries.forEach(function (item, i, arr) {
+            if (item.name == "Russia") {
+                $("#closeCountries1").append(
+                    `<tr class='close-row'><td><b>${item.name}</b></td><td><b>${item.value}</b></td></tr>`
+                );
+            } else {
+                $("#closeCountries1").append(
+                    `<tr class='close-row'><td>${item.name}</td><td>${item.value}</td></tr>`
+                );
+            }
+        });
+    }
 }

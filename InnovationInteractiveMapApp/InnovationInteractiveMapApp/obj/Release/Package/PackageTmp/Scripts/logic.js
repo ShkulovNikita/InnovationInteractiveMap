@@ -73,7 +73,6 @@ function highlightFeature(e) {
 //убрать эффект наведения
 function resetHighlight(e) {
 
-    //geojson.resetStyle(e.target);
     if ((translateIndicator(currentIndicator) == "default") || (currentIndicator == "default")) {
         geojson.setStyle(initialStyle);
     }
@@ -239,48 +238,101 @@ function getHighCountries() {
     array1 = [];
 
     var t = -1;
-    var idplace = 0;
+    var idplace = 100;
     var str = "Russia";
     bounds.features.forEach(function (item, i, arr) {
-        // var nearIndicators = [];
-
         t = t + 1;
 
         var name = item.properties.ADMIN;
         var indicator = "";
 
         for ([key, value] of Object.entries(item.properties)) {
-            // t = t + 1; ptnkl tp tkn
-            if (value == "total_trademark_applications") {
+            if (key == currentIndicator) {
                 indicator = value;
-                //countries.push(value);
                 array1.push({ name: name, value: indicator });
             } else {
             }
-            // if (name == "Russia") {
-            //   idplace = t;
-            // }
-        }
-        console.log(name);
-        if (name == "Russia") {
-            idplace = t;
         }
     });
 
     array1.sort(function (a, b) {
         return a.value - b.value;
     });
-    console.log(array1);
     var str = "Russia";
 
-    var array3 = array1.slice(array1.length - 3, array1.length);
-    array3.forEach(function (item, i, arr) {
-        $("#topCountries").append(
-            `<tr><td>${item.name}</td><td>${item.value}</td></tr>`
-        );
-    });
-    idplace = 100;
-    console.log(Number(idplace));
+    //найти Россию
+    for (i = 0; i < array1.length; i++) {
+        var countryName = array1[i].name;
 
-    console.log(array3);
+        if (countryName == str) {
+            idplace = i;
+            break;
+        }
+    }
+
+    var array3 = array1.slice(array1.length - 3, array1.length);
+
+    //удалить старые строки
+    $('.top-row').remove();
+
+    if ((translateIndicator(currentIndicator) == "default") || (currentIndicator == "default")) {
+        $("#topCountries").append(
+            `<tr class='top-row'><td>n</td><td>-----</td><td>-----</td></tr>`
+        );
+        for (i = 0; i < 3; i++) {
+            $("#topCountries").append(
+                `<tr class='top-row'><td>${i+1}</td><td>-----</td><td>-----</td></tr>`
+            );
+        }
+    } else {
+        $("#topCountries").append(
+            `<tr class='top-row'><td><b>${array1.length - idplace}</b></td><td><b>${array1[idplace].name}</b></td><td><b>${array1[idplace].value}</b></td></tr>`
+        );
+        for (i = 2; i > -1; i--) {
+            $("#topCountries").append(
+                `<tr class='top-row'><td>${3 - i}</td><td>${array3[i].name}</td><td>${array3[i].value}</td></tr>`
+            );
+        }
+    }
+
+    getCloseCountries(idplace);
+}
+
+function getCloseCountries(id) {
+    //удалить старые строки
+    $('.close-row').remove();
+
+    if ((translateIndicator(currentIndicator) == "default") || (currentIndicator == "default")) {
+        for (i = 0; i < 3; i++) {
+            $("#closeCountries1").append(
+                `<tr class='close-row'><td>-----</td><td>-----</td></tr>`
+            );
+        }
+    } else {
+        theNearCountries = [];
+        theNearCountries.push({
+            name: array1[id - 1].name,
+            value: array1[id - 1].value,
+        });
+        theNearCountries.push({
+            name: array1[id].name,
+            value: array1[id].value,
+        });
+        theNearCountries.push({
+            name: array1[id + 1].name,
+            value: array1[id + 1].value,
+        });
+
+        theNearCountries.forEach(function (item, i, arr) {
+            if (item.name == "Russia") {
+                $("#closeCountries1").append(
+                    `<tr class='close-row'><td><b>${item.name}</b></td><td><b>${item.value}</b></td></tr>`
+                );
+            } else {
+                $("#closeCountries1").append(
+                    `<tr class='close-row'><td>${item.name}</td><td>${item.value}</td></tr>`
+                );
+            }
+        });
+    }
 }
