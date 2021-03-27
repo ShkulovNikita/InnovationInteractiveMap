@@ -36,9 +36,10 @@
                         <br />
                         <!--Область таблиц-->
                         <div class="row">
-                            <h4 id="current-country"></h4>:<h4 id="indicator-value"></h4>
                             <div class="col-12">
-                                <!--Таблица лидеров-->
+                                <label style="font-weight: bold"><span id="chosen-country"></span><span id="chosen-value"></span></label>
+    <br/>                            
+    <!--Таблица лидеров-->
                                 <label style="color: rgb(54, 207, 40); font-weight: bold">Топ лидеров</label>
                                 <table class="table" id="topCountries">
                                     <thead>
@@ -46,6 +47,7 @@
                                             <th scope="col">№</th>
                                             <th scope="col">Страна</th>
                                             <th scope="col">Значение</th>
+                                            <th scope="col">%</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -53,19 +55,23 @@
                                             <th>n</th>
                                             <th>-----</th>
                                             <th>-----</th>
-                                        </tr>
-                                        <tr class="top-row">
-                                            <th>n</th>
-                                            <th>-----</th>
                                             <th>-----</th>
                                         </tr>
                                         <tr class="top-row">
                                             <th>n</th>
                                             <th>-----</th>
                                             <th>-----</th>
+                                            <th>-----</th>
                                         </tr>
                                         <tr class="top-row">
                                             <th>n</th>
+                                            <th>-----</th>
+                                            <th>-----</th>
+                                            <th>-----</th>
+                                        </tr>
+                                        <tr class="top-row">
+                                            <th>n</th>
+                                            <th>-----</th>
                                             <th>-----</th>
                                             <th>-----</th>
                                         </tr>
@@ -81,18 +87,22 @@
                                         <tr>
                                             <th scope="col">Страна</th>
                                             <th scope="col">Значение</th>
+                                            <th scope="col">%</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr class="close-row">
                                             <th>-----</th>
                                             <th>-----</th>
+                                            <th>-----</th>
                                         </tr>
                                         <tr class="close-row">
                                             <th>-----</th>
                                             <th>-----</th>
+                                            <th>-----</th>
                                         </tr>
                                         <tr class="close-row">
+                                            <th>-----</th>
                                             <th>-----</th>
                                             <th>-----</th>
                                         </tr>
@@ -156,5 +166,6 @@
         </div>
 
         <script type="text/javascript" src="~/Scripts/logic.js"></script>
+        <link rel="stylesheet" href="~/Content/mystyles.css" />
     </div>
 </div>

@@ -109,15 +109,48 @@ info.onAdd = function (mymap) {
     return this._div;
 };
 
+function translateToRussian(phrase) {
+    if (phrase == "total_patent_applications")
+        return "Количество заявлений на патенты";
+    if (phrase == "total_trademark_applications")
+        return "Количество заявлений на торговые марки";
+    if (phrase == "high_tech_exports")
+        return "Экспорт высоких технологий (в % от производимого экспорта)";
+    if (phrase == "high_tech_exports_usd")
+        return "Экспорт высоких технологий (в долларах США)";
+    if (phrase == "res_and_dev_expenditure")
+        return "Затраты на НИОКР (в % от ВВП)";
+    if (phrase == "payment_for_intel_property")
+        return "Оплата интеллектуальной собственности (в долларах США)";
+}
+
+//возвращает значение, если оно есть, или N/A, если null
+function CheckInfo(str) {
+    if (str != null)
+        return str;
+    else return "N/A";
+}
+
 //обновление поля в зависимости от текущей страны
 info.update = function (props) {
-    this._div.innerHTML =
-        "<h4>Выбранная страна:</h4>" +
-        (props
-            ? "<b>" +
-            props.ADMIN +
-            "</b><br />"
-            : "Наведите курсор на страну");
+    if ((currentIndicator != "default") && (currentIndicator != "Выберите показатель")) {
+        this._div.innerHTML =
+            "<h4>Выбранная страна:</h4>" +
+            (props
+                ? "<b>" +
+                props.ADMIN +
+                "</b><br />" +
+                translateToRussian(currentIndicator) + ": " + CheckInfo(props[currentIndicator])
+                : "Наведите курсор на страну");
+    } else {
+        this._div.innerHTML =
+            "<h4>Выбранная страна:</h4>" +
+            (props
+                ? "<b>" +
+                props.ADMIN +
+                "</b><br />" 
+                : "Наведите курсор на страну");
+    }
 };
 
 //добавить поле к карте
@@ -155,8 +188,33 @@ var selectCountry = document.querySelector("#country");
 var selectIndicator = document.querySelector("#indicators");
 //максимальное значение показателя
 var maxValue = 0;
+//минимальное значение показателя
+var minValue = 0;
 //текущий показатель
 var currentIndicator = selectIndicator.value;
+//легенда
+var legend = L.control({ position: 'bottomright' });
+
+//получение легенды
+legend.onAdd = function (map) {
+    var div = L.DomUtil.create("div", "info legend"),
+        grades = [minValue, maxValue * 0.1, maxValue * 0.2, maxValue * 0.3, maxValue * 0.4, maxValue * 0.5, maxValue * 0.7, maxValue * 0.9, maxValue],
+        labels = [];
+    console.log("grades = " + grades);
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' +
+            getColor(grades[i] + 1) +
+            '"></i> ' +
+            grades[i] +
+            (grades[i + 1]
+                ? "&ndash;" + grades[i + 1] + "<br>"
+                : "+");
+    }
+
+    return div;
+};
 
 //изменение показателя
 selectIndicator.addEventListener("change", (event) => {
@@ -178,6 +236,8 @@ selectIndicator.addEventListener("change", (event) => {
     }
 
     getHighCountries();
+
+    legend.addTo(mymap);
 });
 
 //получение показателя по его русскому названию
@@ -227,7 +287,26 @@ function style(feature) {
 
 //выбрана страна
 selectCountry.addEventListener("change", function () {
-    console.log($("#country").val());
+    if ((currentIndicator != "default") && (currentIndicator != "Выберите показатель")) {
+        var val;
+
+        bounds.features.forEach(function (item, i, arr) {
+            if (item.properties.ADMIN == selectCountry.value) {
+                for ([key, value] of Object.entries(item.properties)) {
+                    if (key == currentIndicator) {
+                        val = value;
+                    } else {
+                    }
+                }
+            }
+        });
+
+        $('#chosen-country').html(selectCountry.value + ": ");
+        $('#chosen-value').html(val);
+    }
+
+
+
 
     getIndicatorsArray();
 });
@@ -277,25 +356,29 @@ function getHighCountries() {
 
     if ((translateIndicator(currentIndicator) == "default") || (currentIndicator == "default")) {
         $("#topCountries").append(
-            `<tr class='top-row'><td>n</td><td>-----</td><td>-----</td></tr>`
+            `<tr class='top-row'><td>n</td><td>-----</td><td>-----</td><td>-----</td></tr>`
         );
         for (i = 0; i < 3; i++) {
             $("#topCountries").append(
-                `<tr class='top-row'><td>${i+1}</td><td>-----</td><td>-----</td></tr>`
+                `<tr class='top-row'><td>${i+1}</td><td>-----</td><td>-----</td><td>-----</td></tr>`
             );
         }
     } else {
         $("#topCountries").append(
-            `<tr class='top-row'><td><b>${array1.length - idplace}</b></td><td><b>${array1[idplace].name}</b></td><td><b>${array1[idplace].value}</b></td></tr>`
+            `<tr class='top-row'><td><b>${array1.length - idplace}</b></td><td><b>${array1[idplace].name}</b></td><td><b>${array1[idplace].value}</b></td><td><b>0</b></td></tr>`
         );
         for (i = 2; i > -1; i--) {
             $("#topCountries").append(
-                `<tr class='top-row'><td>${3 - i}</td><td>${array3[i].name}</td><td>${array3[i].value}</td></tr>`
+                `<tr class='top-row'><td>${3 - i}</td><td>${array3[i].name}</td><td>${array3[i].value}</td><td>${getArray(array1[idplace].value, array3[i].value).toFixed(3)}</td></tr>`
             );
         }
     }
 
     getCloseCountries(idplace);
+}
+
+function getArray(value, valueT) {
+    return (valueT - value) / value * 100;
 }
 
 function getCloseCountries(id) {
@@ -305,32 +388,55 @@ function getCloseCountries(id) {
     if ((translateIndicator(currentIndicator) == "default") || (currentIndicator == "default")) {
         for (i = 0; i < 3; i++) {
             $("#closeCountries1").append(
-                `<tr class='close-row'><td>-----</td><td>-----</td></tr>`
+                `<tr class='close-row'><td>-----</td><td>-----</td><td>-----</td></tr>`
             );
         }
     } else {
         theNearCountries = [];
-        theNearCountries.push({
-            name: array1[id - 1].name,
-            value: array1[id - 1].value,
-        });
-        theNearCountries.push({
-            name: array1[id].name,
-            value: array1[id].value,
-        });
-        theNearCountries.push({
-            name: array1[id + 1].name,
-            value: array1[id + 1].value,
-        });
+
+        //валидация
+        if (id != (array1.length - 1)) {
+            theNearCountries.push({
+                name: array1[id - 1].name,
+                value: array1[id - 1].value,
+                perc: getArray(array1[id].value, array1[id - 1].value),
+            });
+            theNearCountries.push({
+                name: array1[id].name,
+                value: array1[id].value,
+                perc: getArray(array1[id].value, array1[id].value),
+            });
+            theNearCountries.push({
+                name: array1[id + 1].name,
+                value: array1[id + 1].value,
+                perc: getArray(array1[id].value, array1[id + 1].value),
+            });
+        } else {
+            theNearCountries.push({
+                name: array1[id - 2].name,
+                value: array1[id - 2].value,
+                perc: getArray(array1[id].value, array1[id - 2].value),
+            });
+            theNearCountries.push({
+                name: array1[id - 1].name,
+                value: array1[id - 1].value,
+                perc: getArray(array1[id].value, array1[id - 1].value),
+            });
+            theNearCountries.push({
+                name: array1[id].name,
+                value: array1[id].value,
+                perc: getArray(array1[id].value, array1[id].value),
+            });
+        }
 
         theNearCountries.forEach(function (item, i, arr) {
             if (item.name == "Russia") {
                 $("#closeCountries1").append(
-                    `<tr class='close-row'><td><b>${item.name}</b></td><td><b>${item.value}</b></td></tr>`
+                    `<tr class='close-row'><td><b>${item.name}</b></td><td><b>${item.value}</b></td><td><b>${item.perc}</b></td></tr>`
                 );
             } else {
                 $("#closeCountries1").append(
-                    `<tr class='close-row'><td>${item.name}</td><td>${item.value}</td></tr>`
+                    `<tr class='close-row'><td>${item.name}</td><td>${item.value}</td><td>${item.perc.toFixed(3)}</td></tr>`
                 );
             }
         });
