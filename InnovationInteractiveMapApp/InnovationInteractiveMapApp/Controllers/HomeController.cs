@@ -26,6 +26,11 @@ namespace InnovationInteractiveMapApp.Controllers
             string hightechExportsUSDWorldBankPath = Server.MapPath("~/DataFiles/High-technology exports (USD).csv");
             CSVParser.ParseHighTechExportsUSDWorldBank(hightechExportsUSDWorldBankPath, databasePath, mapPath);
 
+            string resAndDevExpendWorldBankPath = Server.MapPath("~/DataFiles/Research and development.csv");
+            CSVParser.ParseResAndDevExpendWorldBank(resAndDevExpendWorldBankPath, databasePath, mapPath);
+
+            string intelPropertyPaymentWorldBankPath = Server.MapPath("~/DataFiles/Charges for the use of intellectual property.csv");
+            CSVParser.ParseIntelPropPaymentWorldBank(intelPropertyPaymentWorldBankPath, databasePath, mapPath);
 
             return View();
         }
