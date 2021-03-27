@@ -20,6 +20,9 @@ namespace InnovationInteractiveMapApp.Controllers
             string trademarkApplicationsWIPOPath = Server.MapPath("~/DataFiles/Total trademark applications.csv");
             CSVParser.ParseTrademarkApplicationsWIPO(trademarkApplicationsWIPOPath, databasePath, mapPath);
 
+            string hightechExportsWorldBankPath = Server.MapPath("~/DataFiles/High-technology exports.csv");
+            CSVParser.ParseHighTechExportsWorldBank(hightechExportsWorldBankPath, databasePath, mapPath);
+
             return View();
         }
     }

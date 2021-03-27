@@ -143,6 +143,7 @@
     <Content Include="Map\countries.geojson" />
     <Content Include="DataFiles\Total patent applications.csv" />
     <Content Include="DataFiles\Total trademark applications.csv" />
+    <Content Include="DataFiles\High-technology exports.csv" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
