@@ -152,6 +152,7 @@
     <Content Include="DataFiles\Charges for the use of intellectual property.csv" />
     <Content Include="Scripts\countries.geojson" />
     <Content Include="countries.geojson" />
+    <None Include="Properties\PublishProfiles\InnovationInteractiveMapApp - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\data.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
