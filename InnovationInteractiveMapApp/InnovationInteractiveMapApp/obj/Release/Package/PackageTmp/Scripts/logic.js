@@ -210,8 +210,12 @@ legend.onAdd = function (map) {
             grades[i] +
             (grades[i + 1]
                 ? "&ndash;" + grades[i + 1] + "<br>"
-                : "+");
+            : "" + "+" + "<br>");
     }
+    div.innerHTML += 
+        '<i style="background:' +
+        "#606060" +
+        '"></i>' + "N/A";
 
     return div;
 };
