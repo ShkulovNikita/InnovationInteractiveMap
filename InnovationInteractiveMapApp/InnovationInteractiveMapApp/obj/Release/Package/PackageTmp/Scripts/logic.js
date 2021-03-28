@@ -318,7 +318,6 @@ function getHighCountries() {
 
     var t = -1;
     var idplace = 100;
-    var str = "Russia";
     bounds.features.forEach(function (item, i, arr) {
         t = t + 1;
 
@@ -429,16 +428,16 @@ function getCloseCountries(id) {
             });
         }
 
-        theNearCountries.forEach(function (item, i, arr) {
-            if (item.name == "Russia") {
+        for (i = 2; i > -1; i--) {
+            if (theNearCountries[i].name == "Russia") {
                 $("#closeCountries1").append(
-                    `<tr class='close-row'><td><b>${item.name}</b></td><td><b>${item.value}</b></td><td><b>${item.perc}</b></td></tr>`
+                    `<tr class='close-row'><td><b>${theNearCountries[i].name}</b></td><td><b>${theNearCountries[i].value}</b></td><td><b>${theNearCountries[i].perc}</b></td></tr>`
                 );
             } else {
                 $("#closeCountries1").append(
-                    `<tr class='close-row'><td>${item.name}</td><td>${item.value}</td><td>${item.perc.toFixed(3)}</td></tr>`
+                    `<tr class='close-row'><td>${theNearCountries[i].name}</td><td>${theNearCountries[i].value}</td><td>${theNearCountries[i].perc.toFixed(3)}</td></tr>`
                 );
             }
-        });
+        }
     }
 }

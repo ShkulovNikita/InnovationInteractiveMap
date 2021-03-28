@@ -13,9 +13,10 @@ h1 {
 }
 
 aside {
-  background: #f0f0f0;
-  padding: 10px;
-  float: right;
+    background: #f0f0f0;
+    padding: 10px;
+    float: right;
+    border-radius: 10px;
 }
 
 .label {
